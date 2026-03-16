@@ -1,0 +1,57 @@
+<div class="movie-list-container">
+  <h1>Meus Filmes</h1>
+
+  <button (click)="addMovie()" class="btn-add">+ Adicionar Filme</button>
+
+  <div *ngIf="isLoading" class="loading">
+    <p>Carregando filmes...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="loadMovies()">Tentar novamente</button>
+  </div>
+
+  <div *ngIf="!isLoading && movies.length === 0 && !error" class="empty-state">
+    <p>Nenhum filme adicionado ainda.</p>
+    <button (click)="addMovie()" class="btn-add">Adicionar seu primeiro filme</button>
+  </div>
+
+  <div *ngIf="!isLoading && movies.length > 0" class="movies-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Gênero</th>
+          <th>Ano</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let movie of movies" [class.watched]="movie.assistido">
+          <td>{{ movie.titulo }}</td>
+          <td>{{ movie.genero }}</td>
+          <td>{{ movie.ano }}</td>
+          <td>
+            <span *ngIf="movie.assistido" class="status-watched">✓ Assistido</span>
+            <span *ngIf="!movie.assistido" class="status-unwatched">✗ Não assistido</span>
+          </td>
+          <td class="actions">
+            <button
+              *ngIf="!movie.assistido"
+              (click)="watchMovie(movie)"
+              class="btn-watch">
+              Marcar como assistido
+            </button>
+            <button
+              (click)="rateMovie(movie)"
+              class="btn-rate">
+              Avaliar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

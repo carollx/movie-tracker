@@ -1,0 +1,56 @@
+# IDEs
+.vscode/
+.idea/
+*.iws
+*.iml
+*.ipr
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backend - Maven & Java
+backend/target/
+backend/.classpath
+backend/.factorypath
+backend/.c9/
+*.jar
+*.zip
+*.tar.gz
+*.rar
+
+# Backend - Spring Boot
+backend/application-dev.properties
+backend/application-prod.properties
+backend/logs/
+backend/*.log
+
+# Frontend - Node.js & Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# Dependencies
+**/node_modules/
+package-lock.json
+yarn.lock
+
+# OS
+.DS_Store
+Thumbs.db
+.gitkeep
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
