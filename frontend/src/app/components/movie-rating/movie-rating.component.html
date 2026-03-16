@@ -1,0 +1,64 @@
+<div class="rating-container">
+  <h2>Avaliar Filme</h2>
+
+  <div *ngIf="success" class="success-message">
+    <p>✓ Avaliação enviada com sucesso! Redirecionando...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+  </div>
+
+  <form [formGroup]="ratingForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label>Nota (1 a 5) *</label>
+      <div class="star-rating">
+        <button
+          *ngFor="let star of getRatingArray()"
+          type="button"
+          (click)="selectRating(star)"
+          [class.active]="nota?.value === star"
+          class="star-btn">
+          ★
+        </button>
+      </div>
+      <div class="rating-value">
+        <span *ngIf="nota?.value">Nota: {{ nota?.value }}</span>
+      </div>
+      <div *ngIf="nota?.invalid && nota?.touched" class="error-text">
+        <p *ngIf="nota?.errors?.['required']">Nota é obrigatória</p>
+        <p *ngIf="nota?.errors?.['min'] || nota?.errors?.['max']">Nota deve estar entre 1 e 5</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="comentario">Comentário *</label>
+      <textarea
+        id="comentario"
+        formControlName="comentario"
+        class="form-control"
+        rows="4"
+        placeholder="Escreva seu comentário sobre o filme"></textarea>
+      <div *ngIf="comentario?.invalid && comentario?.touched" class="error-text">
+        <p *ngIf="comentario?.errors?.['required']">Comentário é obrigatório</p>
+        <p *ngIf="comentario?.errors?.['minlength']">Comentário deve ter no mínimo 5 caracteres</p>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="ratingForm.invalid || isSubmitting">
+        {{ isSubmitting ? 'Enviando...' : 'Enviar Avaliação' }}
+      </button>
+      <button
+        type="button"
+        class="btn-cancel"
+        (click)="onCancel()"
+        [disabled]="isSubmitting">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

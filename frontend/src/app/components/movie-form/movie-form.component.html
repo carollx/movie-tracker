@@ -1,0 +1,86 @@
+<div class="form-container">
+  <h2>Adicionar Novo Filme</h2>
+
+  <div *ngIf="success" class="success-message">
+    <p>✓ Filme cadastrado com sucesso!</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+  </div>
+
+  <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="titulo">Título *</label>
+      <input
+        type="text"
+        id="titulo"
+        formControlName="titulo"
+        class="form-control"
+        placeholder="Digite o título do filme">
+      <div *ngIf="titulo?.invalid && titulo?.touched" class="error-text">
+        <p *ngIf="titulo?.errors?.['required']">Título é obrigatório</p>
+        <p *ngIf="titulo?.errors?.['minlength']">Título deve ter no mínimo 3 caracteres</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="genero">Gênero *</label>
+      <input
+        type="text"
+        id="genero"
+        formControlName="genero"
+        class="form-control"
+        placeholder="Ex: Ação, Drama, Comédia">
+      <div *ngIf="genero?.invalid && genero?.touched" class="error-text">
+        <p *ngIf="genero?.errors?.['required']">Gênero é obrigatório</p>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="ano">Ano *</label>
+        <input
+          type="text"
+          id="ano"
+          formControlName="ano"
+          class="form-control"
+          placeholder="Ex: 2024">
+        <div *ngIf="ano?.invalid && ano?.touched" class="error-text">
+          <p *ngIf="ano?.errors?.['required']">Ano é obrigatório</p>
+          <p *ngIf="ano?.errors?.['pattern']">Ano deve ser um número com 4 dígitos</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descricao">Descrição *</label>
+      <textarea
+        id="descricao"
+        formControlName="descricao"
+        class="form-control"
+        rows="4"
+        placeholder="Digite a descrição do filme"></textarea>
+      <div *ngIf="descricao?.invalid && descricao?.touched" class="error-text">
+        <p *ngIf="descricao?.errors?.['required']">Descrição é obrigatória</p>
+        <p *ngIf="descricao?.errors?.['minlength']">Descrição deve ter no mínimo 10 caracteres</p>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="movieForm.invalid || isSubmitting">
+        {{ isSubmitting ? 'Salvando...' : 'Salvar Filme' }}
+      </button>
+      <button
+        type="button"
+        class="btn-cancel"
+        (click)="onCancel()"
+        [disabled]="isSubmitting">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>
