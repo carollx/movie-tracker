@@ -1,7 +1,8 @@
 <div class="app-container">
   <header class="app-header">
-    <div class="header-content">
-      <h1 class="app-title">🎬 {{ title }}</h1>
+    <div class="header-content" *ngIf="currentUser$ | async as user; else guestHeader">
+      <h1 class="app-title">{{ title }}</h1>
+
       <nav class="app-nav">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
           Meus Filmes
@@ -10,7 +11,18 @@
           Adicionar Filme
         </a>
       </nav>
+
+      <div class="user-menu">
+        <span>{{ user.nome }}</span>
+        <button type="button" (click)="logout()">Sair</button>
+      </div>
     </div>
+
+    <ng-template #guestHeader>
+      <div class="header-content">
+        <h1 class="app-title">{{ title }}</h1>
+      </div>
+    </ng-template>
   </header>
 
   <main class="app-main">
