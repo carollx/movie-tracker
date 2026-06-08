@@ -12,22 +12,22 @@ export class MovieService {
 
   constructor(private http: HttpClient) { }
 
-  // Obter todos os filmes
   getMovies(): Observable<Movie[]> {
     return this.http.get<Movie[]>(`${this.apiUrl}/filmes`);
   }
 
-  // Cadastrar novo filme
+  getRatings(): Observable<Rating[]> {
+    return this.http.get<Rating[]>(`${this.apiUrl}/avaliacoes`);
+  }
+
   createMovie(movie: Movie): Observable<Movie> {
     return this.http.post<Movie>(`${this.apiUrl}/filmes`, movie);
   }
 
-  // Marcar filme como assistido
   markAsWatched(movieId: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/filmes/${movieId}/assistido`, {});
   }
 
-  // Avaliar filme
   rateMovie(rating: Rating): Observable<Rating> {
     return this.http.post<Rating>(`${this.apiUrl}/avaliacoes`, rating);
   }

@@ -95,6 +95,29 @@
   font-weight: 600;
 }
 
+.rating-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 260px;
+}
+
+.rating-summary strong {
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.rating-summary span {
+  color: #4b5563;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.no-rating {
+  color: #777;
+  font-style: italic;
+}
+
 .actions {
   display: flex;
   gap: 8px;

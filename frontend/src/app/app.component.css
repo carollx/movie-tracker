@@ -38,7 +38,7 @@ body {
 .app-title {
   font-size: 28px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
 }
 
 .app-nav {
@@ -61,6 +61,27 @@ body {
 
 .nav-link.active {
   border-bottom-color: white;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.user-menu button {
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 8px 12px;
+}
+
+.user-menu button:hover {
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .app-main {
@@ -96,6 +117,11 @@ body {
     width: 100%;
     justify-content: center;
     gap: 20px;
+  }
+
+  .user-menu {
+    width: 100%;
+    justify-content: center;
   }
 
   .app-main {

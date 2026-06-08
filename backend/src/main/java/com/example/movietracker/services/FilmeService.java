@@ -1,8 +1,11 @@
 package com.example.movietracker.services;
 
 import com.example.movietracker.entities.Filme;
+import com.example.movietracker.entities.User;
 import com.example.movietracker.repositories.FilmeRepository;
+import com.example.movietracker.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,54 +17,32 @@ public class FilmeService {
     @Autowired
     private FilmeRepository filmeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public Filme salvarFilme(Filme filme) {
+        filme.setUsuario(getUsuarioAtual());
         return filmeRepository.save(filme);
     }
 
-    public List<Filme> listarTodosFilmes() {
-        return filmeRepository.findAll();
-    }
-
-    public Optional<Filme> buscarFilmePorId(Long id) {
-        return filmeRepository.findById(id);
-    }
-
-    public List<Filme> listarFilmesAssistidos() {
-        return filmeRepository.findByAssistido(true);
-    }
-
-    public List<Filme> listarFilmesNaoAssistidos() {
-        return filmeRepository.findByAssistido(false);
-    }
-
-    public List<Filme> listarFilmesPorGenero(String genero) {
-        return filmeRepository.findByGenero(genero);
+    public List<Filme> listarFilmes() {
+        return filmeRepository.findByUsuarioId(getUsuarioAtual().getId());
     }
 
     public Filme marcarComoAssistido(Long id) {
-        Optional<Filme> filme = filmeRepository.findById(id);
+        Optional<Filme> filme = filmeRepository.findByIdAndUsuarioId(id, getUsuarioAtual().getId());
         if (filme.isPresent()) {
-            Filme f = filme.get();
-            f.setAssistido(true);
-            return filmeRepository.save(f);
+            Filme filmeAtualizado = filme.get();
+            filmeAtualizado.setAssistido(true);
+            return filmeRepository.save(filmeAtualizado);
         }
+
         return null;
     }
 
-    public Filme atualizarFilme(Long id, Filme filmeAtualizado) {
-        Optional<Filme> filme = filmeRepository.findById(id);
-        if (filme.isPresent()) {
-            Filme f = filme.get();
-            f.setTitulo(filmeAtualizado.getTitulo());
-            f.setGenero(filmeAtualizado.getGenero());
-            f.setAno(filmeAtualizado.getAno());
-            f.setDescricao(filmeAtualizado.getDescricao());
-            return filmeRepository.save(f);
-        }
-        return null;
-    }
-
-    public void deletarFilme(Long id) {
-        filmeRepository.deleteById(id);
+    private User getUsuarioAtual() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario autenticado nao encontrado"));
     }
 }
