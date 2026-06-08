@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { MovieService } from '../../services/movie.service';
 import { Movie } from '../../models/movie';
+import { Rating } from '../../models/rating';
+
+interface MovieWithRating extends Movie {
+  rating?: Rating;
+}
 
 @Component({
   selector: 'app-movie-list',
@@ -9,7 +15,7 @@ import { Movie } from '../../models/movie';
   styleUrls: ['./movie-list.component.css']
 })
 export class MovieListComponent implements OnInit {
-  movies: Movie[] = [];
+  movies: MovieWithRating[] = [];
   isLoading = false;
   error: string | null = null;
 
@@ -25,9 +31,23 @@ export class MovieListComponent implements OnInit {
   loadMovies(): void {
     this.isLoading = true;
     this.error = null;
-    this.movieService.getMovies().subscribe(
-      (movies: Movie[]) => {
-        this.movies = movies;
+    forkJoin({
+      movies: this.movieService.getMovies(),
+      ratings: this.movieService.getRatings()
+    }).subscribe(
+      ({ movies, ratings }) => {
+        const ratingsByMovieId = new Map<number, Rating>();
+
+        ratings.forEach((rating) => {
+          if (!ratingsByMovieId.has(rating.filmeId)) {
+            ratingsByMovieId.set(rating.filmeId, rating);
+          }
+        });
+
+        this.movies = movies.map((movie) => ({
+          ...movie,
+          rating: movie.id ? ratingsByMovieId.get(movie.id) : undefined
+        }));
         this.isLoading = false;
       },
       (error) => {
@@ -42,7 +62,7 @@ export class MovieListComponent implements OnInit {
     this.router.navigate(['/adicionar']);
   }
 
-  watchMovie(movie: Movie): void {
+  watchMovie(movie: MovieWithRating): void {
     if (movie.id) {
       this.movieService.markAsWatched(movie.id).subscribe(
         () => {
@@ -56,7 +76,7 @@ export class MovieListComponent implements OnInit {
     }
   }
 
-  rateMovie(movie: Movie): void {
+  rateMovie(movie: MovieWithRating): void {
     this.router.navigate(['/avaliar', movie.id]);
   }
 }

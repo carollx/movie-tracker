@@ -25,6 +25,7 @@
           <th>Gênero</th>
           <th>Ano</th>
           <th>Status</th>
+          <th>Avaliação</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -34,8 +35,17 @@
           <td>{{ movie.genero }}</td>
           <td>{{ movie.ano }}</td>
           <td>
-            <span *ngIf="movie.assistido" class="status-watched">✓ Assistido</span>
-            <span *ngIf="!movie.assistido" class="status-unwatched">✗ Não assistido</span>
+            <span *ngIf="movie.assistido" class="status-watched">Assistido</span>
+            <span *ngIf="!movie.assistido" class="status-unwatched">Não assistido</span>
+          </td>
+          <td>
+            <div *ngIf="movie.rating; else noRating" class="rating-summary">
+              <strong>Nota {{ movie.rating.nota }}/5</strong>
+              <span>{{ movie.rating.comentario }}</span>
+            </div>
+            <ng-template #noRating>
+              <span class="no-rating">Sem avaliação</span>
+            </ng-template>
           </td>
           <td class="actions">
             <button
@@ -47,7 +57,7 @@
             <button
               (click)="rateMovie(movie)"
               class="btn-rate">
-              Avaliar
+              {{ movie.rating ? 'Editar avaliação' : 'Avaliar' }}
             </button>
           </td>
         </tr>

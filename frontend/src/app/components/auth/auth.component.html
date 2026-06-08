@@ -1,0 +1,40 @@
+<div class="auth-page">
+  <section class="auth-panel">
+    <div class="auth-header">
+      <h1>{{ isRegisterMode ? 'Criar conta' : 'Entrar' }}</h1>
+      <p>{{ isRegisterMode ? 'Comece sua lista pessoal de filmes.' : 'Acesse seus filmes salvos.' }}</p>
+    </div>
+
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-group" *ngIf="isRegisterMode">
+        <label for="nome">Nome</label>
+        <input id="nome" type="text" formControlName="nome" placeholder="Seu nome">
+        <small *ngIf="nome?.invalid && nome?.touched">Informe seu nome.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="voce@email.com">
+        <small *ngIf="email?.invalid && email?.touched">Informe um email válido.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input id="password" type="password" formControlName="password" placeholder="Mínimo de 6 caracteres">
+        <small *ngIf="password?.invalid && password?.touched">A senha deve ter pelo menos 6 caracteres.</small>
+      </div>
+
+      <div class="error-message" *ngIf="error">
+        {{ error }}
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Aguarde...' : (isRegisterMode ? 'Cadastrar' : 'Entrar') }}
+      </button>
+    </form>
+
+    <button type="button" class="btn-link" (click)="toggleMode()">
+      {{ isRegisterMode ? 'Já tenho conta' : 'Criar nova conta' }}
+    </button>
+  </section>
+</div>

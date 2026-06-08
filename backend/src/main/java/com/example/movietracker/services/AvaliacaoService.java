@@ -3,13 +3,17 @@ package com.example.movietracker.services;
 import com.example.movietracker.dtos.AvaliacaoDTO;
 import com.example.movietracker.entities.Avaliacao;
 import com.example.movietracker.entities.Filme;
+import com.example.movietracker.entities.User;
 import com.example.movietracker.repositories.AvaliacaoRepository;
 import com.example.movietracker.repositories.FilmeRepository;
+import com.example.movietracker.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AvaliacaoService {
@@ -20,44 +24,46 @@ public class AvaliacaoService {
     @Autowired
     private FilmeRepository filmeRepository;
 
-    public Avaliacao salvarAvaliacao(AvaliacaoDTO avaliacaoDTO) {
-        Optional<Filme> filme = filmeRepository.findById(avaliacaoDTO.getFilmeId());
+    @Autowired
+    private UserRepository userRepository;
+
+    public AvaliacaoDTO salvarAvaliacao(AvaliacaoDTO avaliacaoDTO) {
+        User usuario = getUsuarioAtual();
+        Optional<Filme> filme = filmeRepository.findByIdAndUsuarioId(avaliacaoDTO.getFilmeId(), usuario.getId());
         if (!filme.isPresent()) {
-            throw new RuntimeException("Filme não encontrado com ID: " + avaliacaoDTO.getFilmeId());
+            throw new RuntimeException("Filme nao encontrado com ID: " + avaliacaoDTO.getFilmeId());
         }
 
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setFilme(filme.get());
         avaliacao.setNota(avaliacaoDTO.getNota());
         avaliacao.setComentario(avaliacaoDTO.getComentario());
+        avaliacao.setUsuario(usuario);
 
-        return avaliacaoRepository.save(avaliacao);
+        Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacao);
+        return toDTO(avaliacaoSalva);
     }
 
-    public List<Avaliacao> listarTodasAvaliacoes() {
-        return avaliacaoRepository.findAll();
+    public List<AvaliacaoDTO> listarAvaliacoes() {
+        User usuario = getUsuarioAtual();
+        return avaliacaoRepository.findByUsuarioIdOrderByIdDesc(usuario.getId())
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Avaliacao> buscarAvaliacaoPorId(Long id) {
-        return avaliacaoRepository.findById(id);
+    private User getUsuarioAtual() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario autenticado nao encontrado"));
     }
 
-    public List<Avaliacao> listarAvaliacoesPorFilme(Long filmeId) {
-        return avaliacaoRepository.findByFilmeId(filmeId);
-    }
-
-    public Avaliacao atualizarAvaliacao(Long id, Avaliacao avaliacaoAtualizada) {
-        Optional<Avaliacao> avaliacao = avaliacaoRepository.findById(id);
-        if (avaliacao.isPresent()) {
-            Avaliacao a = avaliacao.get();
-            a.setNota(avaliacaoAtualizada.getNota());
-            a.setComentario(avaliacaoAtualizada.getComentario());
-            return avaliacaoRepository.save(a);
-        }
-        return null;
-    }
-
-    public void deletarAvaliacao(Long id) {
-        avaliacaoRepository.deleteById(id);
+    private AvaliacaoDTO toDTO(Avaliacao avaliacao) {
+        return new AvaliacaoDTO(
+                avaliacao.getId(),
+                avaliacao.getFilme().getId(),
+                avaliacao.getNota(),
+                avaliacao.getComentario()
+        );
     }
 }
